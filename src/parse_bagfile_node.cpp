@@ -51,21 +51,21 @@ void savePose(void)
 }
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-    cv_bridge::CvImagePtr cv_ptr;
-    try
-    {
-      cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-    }
-    catch (cv_bridge::Exception& e)
-    {
-      ROS_ERROR("cv_bridge exception: %s", e.what());
-      return;
-    }
-    char str[256];
-    sprintf(str, "%s_image%04i.png",filename.c_str(),image_count);
-    ROS_ASSERT( cv::imwrite( str,  cv_ptr->image ) );
-    savePose();
-    image_count++;
+  cv_bridge::CvImagePtr cv_ptr;
+  try
+  {
+    cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+  }
+  catch (cv_bridge::Exception& e)
+  {
+    ROS_ERROR("cv_bridge exception: %s", e.what());
+    return;
+  }
+  char str[256];
+  sprintf(str, "%s_image%04i.png",filename.c_str(),image_count);
+  ROS_ASSERT( cv::imwrite( str,  cv_ptr->image ) );
+  savePose();
+  image_count++;
 }
 void poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
 {
@@ -86,7 +86,10 @@ int main(int argc, char **argv)
   nh.param<std::string>("poseTopic", poseTopic, "pose");
   nh.param<std::string>("filename", filename, "agent");
   image_transport::ImageTransport it(n);
-  image_transport::Subscriber sub = it.subscribe(imageTopic, 1, imageCallback);
+  image_transport::Subscriber sub = it.subscribe(imageTopic, 1, 
+      imageCallback,
+      ros::VoidPtr(),image_transport::TransportHints("compressed"));
+
   ros::Subscriber poseSub = n.subscribe(poseTopic, 1, poseCallback);
   image_count = 0;
   ros::spin();
