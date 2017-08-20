@@ -14,7 +14,7 @@ void savePose(void)
 {
   FILE *fp;
   char str[256];
-  sprintf(str, "%s_pose%04i.txt",filename.c_str(),image_count);
+  sprintf(str, "pose%04i.txt",filename.c_str(),image_count);
   fp=fopen(str, "w");
   if(!fp) {
     ROS_ERROR("failed to open %s\n",str);
@@ -62,7 +62,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
     return;
   }
   char str[256];
-  sprintf(str, "%s_image%04i.png",filename.c_str(),image_count);
+  sprintf(str, "image%04i.jpg",filename.c_str(),image_count);
   ROS_ASSERT( cv::imwrite( str,  cv_ptr->image ) );
   savePose();
   image_count++;
